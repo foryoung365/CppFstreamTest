@@ -34,14 +34,20 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         cd build\bin\Release
-        .\fs_test.exe > result_win.txt
+        echo "=== Windows Test Results ===" > result_win.txt
+        echo "Current Directory: %CD%" >> result_win.txt
+        .\fs_test.exe >> result_win.txt
+        type result_win.txt
       shell: cmd
 
     - name: Run Test (Unix-like)
       if: matrix.os != 'windows-latest'
       run: |
         cd build/bin
-        ./fs_test > result_$(uname).txt
+        echo "=== $(uname) Test Results ===" > result_$(uname).txt
+        echo "Current Directory: $(pwd)" >> result_$(uname).txt
+        ./fs_test >> result_$(uname).txt
+        cat result_$(uname).txt
       shell: bash
 
     - name: Upload results
@@ -51,3 +57,14 @@ jobs:
         path: |
           build/bin/result_*.txt
           build/bin/Release/result_*.txt
+
+    # 添加一个汇总步骤
+    - name: Summarize Results
+      run: |
+        echo "### Test Results for ${{ matrix.os }}" >> $GITHUB_STEP_SUMMARY
+        if [ "${{ matrix.os }}" = "windows-latest" ]; then
+          cat build/bin/Release/result_win.txt >> $GITHUB_STEP_SUMMARY
+        else
+          cat build/bin/result_*.txt >> $GITHUB_STEP_SUMMARY
+        fi
+      shell: bash
