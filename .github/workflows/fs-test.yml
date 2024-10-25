@@ -1,0 +1,45 @@
+name: File System Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-fs:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Configure CMake
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build
+      run: cmake --build build --config Release
+
+    - name: Run Test (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        cd build
+        .\run_test.bat
+      shell: cmd
+
+    - name: Run Test (Unix-like)
+      if: matrix.os != 'windows-latest'
+      run: |
+        cd build
+        ./run_test.sh
+
+    - name: Upload results
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results-${{ matrix.os }}
+        path: build/bin/result_*.txt
