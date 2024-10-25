@@ -3,6 +3,22 @@
 #include <system_error>
 using namespace std;
 
+static int SafeFOpen(FILE** fp, const char* filename, const char* mode)
+{
+#ifdef _WIN32
+    return fopen_s(fp, filename, mode);
+#else
+    // Unix-like 系统的安全实现
+    if (!fp || !filename || !mode) {
+        errno = EINVAL;
+        return EINVAL;
+    }
+
+    *fp = fopen(filename, mode);
+    return (*fp == NULL) ? errno : 0;
+#endif
+}
+
 void test_path(const char* path) {
     cout << "\nTesting path \"" << path << "\":" << endl;
 
@@ -26,7 +42,7 @@ void test_path(const char* path) {
 
     {
         FILE* fp = nullptr;
-        int nErr = fopen_s(&fp, path, "r");
+        int nErr = SafeFOpen(&fp, path, "r");
         cout << "\nFILE* status:" << endl;
         cout << "  good(): " << (fp != nullptr) << endl;
         cout << "  error: " << nErr << endl;
