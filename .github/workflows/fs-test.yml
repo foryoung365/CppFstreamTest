@@ -1,4 +1,3 @@
-# .github/workflows/fs-test.yml
 name: File System Test
 
 on:
@@ -23,12 +22,6 @@ jobs:
       with:
         fetch-depth: 1
     
-    - name: List directory contents
-      run: |
-        pwd
-        ls -la
-      shell: bash
-    
     - name: Configure CMake
       run: cmake -B build -DCMAKE_BUILD_TYPE=Release
       shell: bash
@@ -40,8 +33,8 @@ jobs:
     - name: Run Test (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        cd build/bin/Release
-        ./fs_test.exe > result_win.txt
+        cd build\bin\Release
+        .\fs_test.exe > result_win.txt
       shell: cmd
 
     - name: Run Test (Unix-like)
