@@ -1,11 +1,12 @@
+# .github/workflows/fs-test.yml
 name: File System Test
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]  # 支持main或master分支
   pull_request:
-    branches: [ main ]
-  workflow_dispatch:
+    branches: [ main, master ]
+  workflow_dispatch:  # 允许手动触发
 
 jobs:
   test-fs:
@@ -28,18 +29,20 @@ jobs:
     - name: Run Test (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        cd build
-        .\run_test.bat
+        cd build/bin/Release
+        ./fs_test.exe > result_win.txt
       shell: cmd
 
     - name: Run Test (Unix-like)
       if: matrix.os != 'windows-latest'
       run: |
-        cd build
-        ./run_test.sh
+        cd build/bin
+        ./fs_test > result_$(uname).txt
 
     - name: Upload results
       uses: actions/upload-artifact@v3
       with:
         name: test-results-${{ matrix.os }}
-        path: build/bin/result_*.txt
+        path: |
+          build/bin/result_*.txt
+          build/bin/Release/result_*.txt

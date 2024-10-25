@@ -1,45 +1,14 @@
-# src/CMakeLists.txt
-add_executable(fs_test main.cpp)
+# CMakeLists.txt
+cmake_minimum_required(VERSION 3.15)
+project(FSTest VERSION 1.0)
 
-# 为Windows MSVC编译器设置特定选项
-if(MSVC)
-    target_compile_options(fs_test PRIVATE /W4)
-    # 确保使用正确的字符编码
-    target_compile_options(fs_test PRIVATE /utf-8)
-else()
-    # 为GCC和Clang设置警告选项
-    target_compile_options(fs_test PRIVATE -Wall -Wextra)
-endif()
+# 设置C++标准
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# 添加测试
-enable_testing()
-add_test(NAME FSTest COMMAND fs_test)
+# 可执行文件输出目录
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# 设置工作目录为构建目录
-set_tests_properties(FSTest PROPERTIES
-    WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-)
-
-# 生成运行脚本
-if(WIN32)
-    file(WRITE ${CMAKE_BINARY_DIR}/run_test.bat
-        "@echo off\n"
-        "cd bin\n"
-        "fs_test.exe > result_win.txt\n"
-    )
-else()
-    file(WRITE ${CMAKE_BINARY_DIR}/run_test.sh
-        "#!/bin/bash\n"
-        "cd bin\n"
-        "./fs_test > result_$(uname).txt\n"
-    )
-endif()
-
-# 为非Windows系统设置脚本权限
-if(NOT WIN32)
-    file(CHMOD ${CMAKE_BINARY_DIR}/run_test.sh
-        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-                   GROUP_READ GROUP_EXECUTE
-                   WORLD_READ WORLD_EXECUTE
-    )
-endif()
+# 添加源文件目录
+add_subdirectory(src)
