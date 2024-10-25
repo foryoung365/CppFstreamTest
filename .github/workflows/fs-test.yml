@@ -3,10 +3,10 @@ name: File System Test
 
 on:
   push:
-    branches: [ main, master ]  # 支持main或master分支
+    branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
-  workflow_dispatch:  # 允许手动触发
+  workflow_dispatch:
 
 jobs:
   test-fs:
@@ -18,13 +18,24 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 1
+    
+    - name: List directory contents
+      run: |
+        pwd
+        ls -la
+      shell: bash
     
     - name: Configure CMake
       run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+      shell: bash
 
     - name: Build
       run: cmake --build build --config Release
+      shell: bash
 
     - name: Run Test (Windows)
       if: matrix.os == 'windows-latest'
@@ -38,6 +49,7 @@ jobs:
       run: |
         cd build/bin
         ./fs_test > result_$(uname).txt
+      shell: bash
 
     - name: Upload results
       uses: actions/upload-artifact@v3
