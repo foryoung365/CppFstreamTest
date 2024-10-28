@@ -22,34 +22,43 @@ static int SafeFOpen(FILE** fp, const char* filename, const char* mode)
 void test_path(const char* path) {
     cout << "\nTesting path \"" << path << "\":" << endl;
 
-    {
-        ifstream ifs(path);
-        cout << "ifstream status:" << endl;
-        cout << "  good(): " << ifs.good() << endl;
-        cout << "  fail(): " << ifs.fail() << endl;
-        cout << "  bad():  " << ifs.bad() << endl;
-        cout << "  error: " << std::error_code(errno, std::system_category()).message() << endl;
-    }
+    // {
+    //     ifstream ifs(path);
+    //     cout << "ifstream status:" << endl;
+    //     cout << "  good(): " << ifs.good() << endl;
+    //     cout << "  fail(): " << ifs.fail() << endl;
+    //     cout << "  bad():  " << ifs.bad() << endl;
+    //     cout << "  error: " << std::error_code(errno, std::system_category()).message() << endl;
+    // }
 
-    {
-        fstream fs(path, ios::app);
-        cout << "\nfstream status:" << endl;
+    // {
+    //     fstream fs(path, ios::app);
+    //     cout << "\nfstream status:" << endl;
+    //     cout << "  good(): " << fs.good() << endl;
+    //     cout << "  fail(): " << fs.fail() << endl;
+    //     cout << "  bad():  " << fs.bad() << endl;
+    //     cout << "  error: " << std::error_code(errno, std::system_category()).message() << endl;
+    // }
+
+    // {
+    //     FILE* fp = nullptr;
+    //     int nErr = SafeFOpen(&fp, path, "r+");
+    //     cout << "\nFILE* status:" << endl;
+    //     cout << "  good(): " << (fp != nullptr) << endl;
+    //     cout << "  error: " << nErr << endl;
+    //     if (fp)
+    //     {
+	//         fclose(fp);
+    //     }
+    // }
+
+	{
+        fstream fs(path, ios::in | ios::out);
+        cout << "\nfstream in&&out status:" << endl;
         cout << "  good(): " << fs.good() << endl;
         cout << "  fail(): " << fs.fail() << endl;
         cout << "  bad():  " << fs.bad() << endl;
         cout << "  error: " << std::error_code(errno, std::system_category()).message() << endl;
-    }
-
-    {
-        FILE* fp = nullptr;
-        int nErr = SafeFOpen(&fp, path, "r");
-        cout << "\nFILE* status:" << endl;
-        cout << "  good(): " << (fp != nullptr) << endl;
-        cout << "  error: " << nErr << endl;
-        if (fp)
-        {
-	        fclose(fp);
-        }
     }
 }
 
@@ -67,10 +76,8 @@ int main() {
     cout << "Current working directory test:\n";
     test_path(".");
     test_path("./");
-
-#ifdef _WIN32
     test_path(".\\");
-#endif
+	test_path("hello.txt");
 
     return 0;
 }
